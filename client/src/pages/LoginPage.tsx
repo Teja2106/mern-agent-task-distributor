@@ -6,7 +6,9 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { Spinner } from '../components/ui/spinner';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { api } from '@/lib/api';
+
 
 const schema = z.object({
     email: z.email({ message: 'Invalid email ID.' }),
@@ -18,13 +20,15 @@ type FormFields = z.infer<typeof schema>;
 export const Login = () => {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormFields>({ resolver: zodResolver(schema) });
 
-    const onSubmit: SubmitHandler<FormFields> = async (data) => {
-        console.log(data);
-        const res = await axios.get('http://localhost:3000/api/test');
+    const navigate = useNavigate();
+
+    const onSubmit: SubmitHandler<FormFields> = async ({ email, password }) => {
+        const res = await api.post('/login', { email, password });
         if (res.status === 200) {
-            console.log(res.data.message)
+            navigate('/dashboard');
         }
-    }
+    };
+
     return (
         <>
             <div className='h-screen flex justify-center items-center'>

@@ -1,0 +1,5 @@
+export const dummyUser = {
+    id: '1',
+    email: 'test@example.com',
+    password: 'password123',
+}

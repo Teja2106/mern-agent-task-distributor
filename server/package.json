@@ -1,13 +1,14 @@
 {
   "name": "server",
-  "module": "index.ts",
+  "module": "src/app.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --hot index.ts"
+    "dev": "bun --hot src/app.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6"
   },
@@ -15,7 +16,9 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "jose": "^6.1.3"
   }
 }
