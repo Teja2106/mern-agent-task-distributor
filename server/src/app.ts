@@ -3,13 +3,17 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import loginRoute from './routes/auth.routes';
 import protectedDashboard from './routes/protected.routes';
+import { connectDB } from './config/db';
 
 const app = express();
+
+await connectDB();
 
 app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
