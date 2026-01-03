@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import type { JSX } from "react/jsx-runtime";
+import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
@@ -14,7 +14,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
     if (authorized == null) return null;
 
-    if (!authorized) return <Navigate to={`/`} replace />
+    if (!authorized) return <Navigate to={`/login`} replace /> //change the path as needed
 
     return children;
 };

@@ -8,6 +8,8 @@ import { Spinner } from '../components/ui/spinner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 
 const schema = z.object({
@@ -23,9 +25,38 @@ export const Login = () => {
     const navigate = useNavigate();
 
     const onSubmit: SubmitHandler<FormFields> = async ({ email, password }) => {
-        const res = await api.post('/login', { email, password });
-        if (res.status === 200) {
-            navigate('/dashboard');
+        try {
+            const res = await api.post('/login', { email, password });
+            if (res.status === 200) {
+                toast.success('Login successful!', {
+                    duration: 2500,
+                    description: 'Welcome back!',
+                });
+
+                setTimeout(() => {
+                    navigate('/dashboard')
+                }, 800);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const status = error.response?.status;
+
+                if (status === 401) {
+                    toast.error('Invalid credentials.', {
+                        description: 'Please enter valid credentials and try again.'
+                    });
+
+                    return;
+                }
+
+                toast.error('Login failed.', {
+                    description: 'Something went wrong. Please try again.'
+                });
+            } else {
+                toast.error('Unexpected error.', {
+                    description: 'Please try again later.'
+                });
+            }
         }
     };
 
@@ -44,14 +75,14 @@ export const Login = () => {
                             <div className='flex flex-col'>
                                 <div>
                                     <Label className='ml-1 mb-3 font-bold'>Email <span className='text-red-500'>*</span></Label>
-                                    <Input type='text' { ...register('email') } className='border-2' placeholder='user@email.com' />
-                                    { errors.email && (<p className='text-red-400 ml-1'>{ errors.email.message }</p>) }
+                                    <Input type='text' {...register('email')} className='border-2' placeholder='user@email.com' />
+                                    {errors.email && (<p className='text-red-400 ml-1'>{errors.email.message}</p>)}
                                 </div>
 
                                 <div className='mt-4'>
                                     <Label className='ml-1 mb-3 font-bold'>Password <span className='text-red-500'>*</span></Label>
-                                    <Input type='password' { ...register('password') } className='border-2' placeholder='******' />
-                                    { errors.password && (<p className='text-red-400 ml-1'>{ errors.password.message }</p>) }
+                                    <Input type='password' {...register('password')} className='border-2' placeholder='******' />
+                                    {errors.password && (<p className='text-red-400 ml-1'>{errors.password.message}</p>)}
                                 </div>
 
                                 <div>
@@ -59,7 +90,7 @@ export const Login = () => {
                                 </div>
 
                                 <div className='mt-6'>
-                                    <Button className='w-full' type='submit' disabled={ isSubmitting }>{ isSubmitting ? <Spinner /> : 'Login' }</Button>
+                                    <Button className='w-full' type='submit' disabled={isSubmitting}>{isSubmitting ? <Spinner /> : 'Login'}</Button>
                                 </div>
                             </div>
                         </form>
