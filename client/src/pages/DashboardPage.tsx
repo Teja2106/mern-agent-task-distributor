@@ -1,38 +1,23 @@
-import { LogoutButton } from "@/components/custom/LogoutButton"
-import { Button } from "@/components/ui/button"
-import { PlusIcon, type PlusIconHandle } from "@/components/ui/plus"
+import { ManageAgents } from "@/components/custom/ManageAgents"
+import { Navbar } from "@/components/custom/Navbar"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { UploadIcon } from "@/components/ui/upload"
+import { UploadIcon, type UploadIconHandle } from "@/components/ui/upload"
 import { UsersIcon, type UsersIconHandle } from "@/components/ui/users"
 import { useEffect, useRef } from "react"
 
 export const Dashboard = () => {
-    const plusIconRef = useRef<PlusIconHandle>(null);
     const userIconRef = useRef<UsersIconHandle>(null);
+    const uploadIconRef = useRef<UploadIconHandle>(null);
 
     useEffect(() => {
-        plusIconRef.current?.stopAnimation();
         userIconRef.current?.stopAnimation();
+        uploadIconRef.current?.stopAnimation();
     }, []);
 
     return (
         <>
-            <nav className="h-20 flex items-center justify-around gap-x-212.5">
-                <div className="font-bold text-2xl flex items-center gap-2">
-                    <div>
-                        <UsersIcon ref={ userIconRef } className="text-blue-600" size={24} />
-                    </div>
-
-                    <div>
-                        <p>Admin Dashboard</p>
-                    </div>
-                </div>
-
-                <div className="font-semibold text-lg flex items-center gap-2">
-                    <LogoutButton />
-                </div>
-            </nav>
+            <Navbar />
 
             <Separator />
 
@@ -52,7 +37,7 @@ export const Dashboard = () => {
 
                             data-[state=active]:after:scale-x-100
                             ">
-                                <UsersIcon ref={ userIconRef } />
+                                <UsersIcon ref={userIconRef} />
                                 <div className="pl-1.5">
                                     Manage Agents
                                 </div>
@@ -69,21 +54,21 @@ export const Dashboard = () => {
 
                             data-[state=active]:after:scale-x-100
                             ">
-                                <UploadIcon />
+                                <UploadIcon ref={uploadIconRef} />
                                 Distribution
                             </TabsTrigger>
                         </TabsList>
 
-                
-                        <TabsContent value="manage_agents">
-                            <div className="flex items-center justify-between">
-                                <div className="mt-6">
-                                    <p className="font-bold text-2xl">Manage Agents</p>
-                                    <p className="text-gray-400">Add and manage your agent accounts</p>
-                                </div>
 
-                                <div className="mr-24.5">
-                                    <Button><PlusIcon ref={ plusIconRef } /> Add Agent</Button>
+                        <TabsContent value="manage_agents">
+                            <ManageAgents />
+                        </TabsContent>
+
+                        <TabsContent value="distribution">
+                            <div>
+                                <div className="mt-6">
+                                    <p className="font-bold text-2xl">Upload & Distribute Lists</p>
+                                    <p className="text-gray-400">Upload CSV files and distribute them equally among 5 agents</p>
                                 </div>
                             </div>
                         </TabsContent>

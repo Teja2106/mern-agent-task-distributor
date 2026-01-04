@@ -15,7 +15,7 @@ export const LogoutButton = () => {
 
     const handleLogout = async () => {
         await api.post('logout');
-        navigate('/');
+        navigate('/login');
     }
 
     return (

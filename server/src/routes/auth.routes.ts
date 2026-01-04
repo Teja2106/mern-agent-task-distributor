@@ -2,9 +2,9 @@ import { Router } from "express";
 import { login, logout } from "../controllers/auth.controller";
 import { protect } from "../middleware/auth.middleware";
 
-const router = Router();
+const authRouter = Router();
 
-router.post('/login', login);
-router.post('/logout', protect, logout);
+authRouter.post('/login', login);
+authRouter.post('/logout', protect, logout);
 
-export default router;
+export default authRouter;

@@ -17,7 +17,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={ <PublicRoute children={ <Login /> } /> } />
 
-          <Route path="/dashboard" element={ <ProtectedRoute children={<Dashboard />} /> } />
+          <Route path="/dashboard" element={ <ProtectedRoute children={<Dashboard />} /> } /> {/* <ProtectedRoute children={<Dashboard />} /> */}
         </Routes>
       </Router>
     </>
