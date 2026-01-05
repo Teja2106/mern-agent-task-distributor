@@ -5,10 +5,19 @@ export const addAgent = async (req: Request, res: Response) => {
     try {
         const { fullname, email, phone, password } = req.body;
 
-        const existingAgent = await User.findOne({ email: email });
+        const existingAgent = await User.findOne({ $or: [
+            { email: email },
+            { phone: phone }
+        ] });
 
         if (existingAgent) {
-            return res.status(409).json({ message: 'Agent already exists' });
+            if (existingAgent.email === email) {
+                return res.status(409).json({ message: 'Email already in use.' });
+            }
+
+            if (existingAgent.phone === phone) {
+                return res.status(409).json({ message: 'Phone number already in use.' });
+            }
         }
 
         await User.create({

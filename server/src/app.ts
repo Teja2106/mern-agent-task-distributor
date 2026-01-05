@@ -6,6 +6,7 @@ import protectedDashboard from './routes/protected.routes';
 import { connectDB } from './config/db';
 import addAgentRouter from './routes/add-agent.route';
 import agentsRouter from './routes/agents.route';
+import deleteAgentRouter from './routes/delete-agent.route';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api', authRouter);
 app.use('/api', protectedDashboard);
 app.use('/api', addAgentRouter);
 app.use('/api', agentsRouter);
+app.use('/api', deleteAgentRouter);
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000')

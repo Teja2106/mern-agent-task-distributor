@@ -40,6 +40,9 @@ export const ManageAgents = () => {
     // Fetching agents from the backend
     const [agents, setAgents] = useState<Agent[]>([]);
 
+    // Dialog state (open & close)
+    const [openDialogId, setOpenDialogId] = useState<string | null>(null);
+
     const loadAgents = async () => {
         try {
             const res = await api.get('/agents');
@@ -66,6 +69,43 @@ export const ManageAgents = () => {
         setShowForm(false);
     }
 
+    // Delete agent API call
+    const deleteAgent = async (_id: string) => {
+        try {
+            const res = await api.delete('/delete-agent', { data: { _id } });
+            if (res.status === 204) {
+                toast.success('Agent deleted successfully!', {
+                    duration: 2500
+                });
+
+                setOpenDialogId(null);
+                await loadAgents();
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const status = error.response?.status;
+
+                if (status === 404) {
+                    toast.error('Agent not found.', {
+                        duration: 2500
+                    });
+
+                    return;
+                }
+
+                toast.error('Failed to delete agent.', {
+                    description: 'Something went wrong. Please try again.',
+                    duration: 2500
+                });
+            } else {
+                toast.error('Unexpected error.', {
+                    description: 'Please try again later.',
+                    duration: 2500
+                })
+            }
+        }
+    }
+
     const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormFields>({ resolver: zodResolver(schema) });
 
     const onSubmit: SubmitHandler<FormFields> = async ({ fullname, email, phone, password }) => {
@@ -86,16 +126,20 @@ export const ManageAgents = () => {
                 const status = error.response?.status;
 
                 if (status === 409) {
-                    toast.error('Agent already exists.')
+                    toast.error(error.response?.data.message, {
+                        duration: 2500
+                    })
                     return;
                 }
 
                 toast.error('Failed to add agent.', {
-                    description: 'Something went wrong. Please try again.'
+                    description: 'Something went wrong. Please try again.',
+                    duration: 2500
                 });
             } else {
                 toast.error('Unexpected error.', {
-                    description: 'Please try again later.'
+                    description: 'Please try again later.',
+                    duration: 2500
                 });
             }
         }
@@ -194,7 +238,7 @@ export const ManageAgents = () => {
                                             </div>
                                         </div>
                                         
-                                        <Dialog>
+                                        <Dialog open={ openDialogId === agent._id } onOpenChange={(open) => setOpenDialogId(open ? agent._id : null)}>
                                             <DialogTrigger asChild>
                                                 <Button variant="ghost" className="hover:bg-red-600 hover:text-white text-red-600 cursor-pointer">
                                                     <DeleteIcon size={18} />
@@ -214,7 +258,7 @@ export const ManageAgents = () => {
                                                         <Button variant={'outline'}>Cancel</Button>
                                                     </DialogClose>
 
-                                                    <Button variant={'destructive'} onClick={() => console.log(`delete ${ agent._id }`)}>Delete</Button>
+                                                    <Button variant={'destructive'} onClick={ () => deleteAgent(agent._id) }>Delete</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
