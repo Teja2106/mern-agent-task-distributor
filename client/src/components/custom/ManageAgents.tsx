@@ -12,6 +12,8 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 import axios from "axios";
 import { AtSignIcon, type AtSignIconHandle } from "../ui/at-sign";
+import { DeleteIcon } from "../ui/delete";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 const schema = z.object({
     fullname: z.string().min(1, { message: 'Full name is required' }),
@@ -173,22 +175,49 @@ export const ManageAgents = () => {
                         {agents.map((agent) => (
                             <Card key={agent._id} className="w-full max-w-full mb-2.5">
                                 <CardContent>
-                                    <div className="mb-4">
-                                        <p className="ml-1.5 font-semibold">{agent.name}</p>
-                                    </div>
-                                    <div className="flex gap-10 items-center">
-                                        <div className="flex gap-2 items-center">
-                                            <AtSignIcon ref={atIconRef} size={16} />
-                                            <p>{agent.email}</p>
-                                        </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex flex-col gap-2">
+                                            <p className="ml-1.5 font-semibold text-base">{agent.name}</p>
+                                            <div className="flex gap-10 items-center">
+                                                <div className="flex gap-2 items-center">
+                                                    <AtSignIcon size={16} />
+                                                    <p>{agent.email}</p>
+                                                </div>
 
-                                        <div className="flex gap-2 items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
-                                            </svg>
-                                            <p>{agent.phone}</p>
+                                                <div className="flex gap-2 items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                        <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
+                                                    </svg>
+                                                    <p>{agent.phone}</p>
+                                                </div>
+                                            </div>
                                         </div>
+                                        
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="ghost" className="hover:bg-red-600 hover:text-white text-red-600 cursor-pointer">
+                                                    <DeleteIcon size={18} />
+                                                </Button>
+                                            </DialogTrigger>
+
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Are you sure you want to delete this agent?</DialogTitle>
+                                                    <DialogDescription>
+                                                        Upon deletion, the agent will no longer have access to the system.
+                                                    </DialogDescription>
+                                                </DialogHeader>
+
+                                                <DialogFooter>
+                                                    <DialogClose asChild>
+                                                        <Button variant={'outline'}>Cancel</Button>
+                                                    </DialogClose>
+
+                                                    <Button variant={'destructive'} onClick={() => console.log(`delete ${ agent._id }`)}>Delete</Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
                                     </div>
                                 </CardContent>
                             </Card>
