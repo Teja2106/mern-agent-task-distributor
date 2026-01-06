@@ -7,6 +7,7 @@ import { connectDB } from './config/db';
 import addAgentRouter from './routes/add-agent.route';
 import agentsRouter from './routes/agents.route';
 import deleteAgentRouter from './routes/delete-agent.route';
+import distributionRouter from './routes/distribution.route';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api', protectedDashboard);
 app.use('/api', addAgentRouter);
 app.use('/api', agentsRouter);
 app.use('/api', deleteAgentRouter);
+app.use('/api', distributionRouter);
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000')

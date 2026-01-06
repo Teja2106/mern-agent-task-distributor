@@ -1,4 +1,4 @@
-import { useWatch ,useForm, type SubmitHandler } from "react-hook-form"
+import { useWatch, useForm, type SubmitHandler } from "react-hook-form"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Input } from "../ui/input"
@@ -8,6 +8,8 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Spinner } from "../ui/spinner"
 import { toast } from "sonner"
+import { api } from "@/lib/api"
+import axios from "axios"
 
 const MAX_UPLOAD_SIZE = 10 * 1024; // 10 KB
 const ACCEPTED_FILE_TYPES = ['text/csv'];
@@ -32,9 +34,52 @@ export const Distribution = () => {
     const selectedFile = uploadedFile?.[0];
 
     const onSubmit: SubmitHandler<FileUploadForm> = async (data) => {
-        console.log(data);
-        toast.success('File has been uploaded successfully!');
-        reset();
+        try {
+            const formData = new FormData();
+            formData.append('file', data.file[0]);
+
+            const res = await api.post('/distribution', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            if (res.status === 200) {
+                console.log(res.data.message);
+                toast.success('File has been uploaded successfully!', {
+                    action: {
+                        label: 'Close',
+                        onClick: () => toast.dismiss()
+                    }
+                });
+                reset();
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const status = error.response?.status;
+
+                if (status === 400) {
+                    toast.error('Invalid file format.', {
+                        description: <span className="text-gray-500">Please ensure the file has the correct format and required columns.</span>,
+                        
+                        action: {
+                            label: 'Close',
+                            onClick: () => toast.dismiss()
+                        }
+                    })
+
+                    return;
+                }
+
+                toast.error('File upload failed.', {
+                    description: <span className="text-gray-500">Something went wrong. Please try again.</span>
+                });
+            } else {
+                toast.error('Unexpected error.', {
+                    description: <span className="text-gray-500">Please try again later.</span>
+                });
+            }
+        }
     }
 
     return (
@@ -67,7 +112,7 @@ export const Distribution = () => {
                                     {selectedFile ? selectedFile.name : "Click to upload"}
                                 </p>
 
-                                <p className="text-xs text-gray-400 mt-1">CSV only (max 10 KB)</p>
+                                <p className="text-xs text-gray-400 mt-1">.csv, .xlsx & .xls only (max 10 KB)</p>
 
                                 {selectedFile && (
                                     <p className="mt-2 text-xs text-gray-500">
@@ -75,7 +120,7 @@ export const Distribution = () => {
                                     </p>
                                 )}
 
-                                <Input {...register("file")} id="dropzone-file" type="file" accept=".csv" className="absolute inset-0 opacity-0 cursor-pointer" />
+                                <Input {...register("file")} id="dropzone-file" type="file" accept=".csv,.xlsx,.xls" className="absolute inset-0 opacity-0 cursor-pointer" />
                             </Label>
 
                             {/* Error */}

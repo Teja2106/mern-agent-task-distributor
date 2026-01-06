@@ -10,7 +10,7 @@ import { PublicRoute } from "./components/custom/PublicRoute";
 function App() {
   return (
     <>
-      <Toaster richColors position="top-right" />
+      <Toaster duration={2500} position="top-right" />
       <Router>
         <Routes>
           <Route path="*" element={<NotFound />} />

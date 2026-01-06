@@ -29,8 +29,11 @@ export const Login = () => {
             const res = await api.post('/login', { email, password });
             if (res.status === 200) {
                 toast.success('Login successful!', {
-                    duration: 2500,
-                    description: 'Welcome back!',
+                    description: <span className="text-gray-500">Welcome back!</span>,
+                    action: {
+                        label: 'Close',
+                        onClick: () => toast.dismiss()
+                    }
                 });
 
                 setTimeout(() => {
@@ -43,18 +46,18 @@ export const Login = () => {
 
                 if (status === 401) {
                     toast.error('Invalid credentials.', {
-                        description: 'Please enter valid credentials and try again.'
+                        description: <span className="text-gray-500">Please enter valid credentials and try again.</span>
                     });
 
                     return;
                 }
 
                 toast.error('Login failed.', {
-                    description: 'Something went wrong. Please try again.'
+                    description: <span className="text-gray-500">Something went wrong. Please try again.</span>
                 });
             } else {
                 toast.error('Unexpected error.', {
-                    description: 'Please try again later.'
+                    description: <span className="text-gray-500">Please try again later.</span>
                 });
             }
         }

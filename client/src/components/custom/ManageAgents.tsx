@@ -74,9 +74,7 @@ export const ManageAgents = () => {
         try {
             const res = await api.delete('/delete-agent', { data: { _id } });
             if (res.status === 204) {
-                toast.success('Agent deleted successfully!', {
-                    duration: 2500
-                });
+                toast.success('Agent deleted successfully!');
 
                 setOpenDialogId(null);
                 await loadAgents();
@@ -86,21 +84,16 @@ export const ManageAgents = () => {
                 const status = error.response?.status;
 
                 if (status === 404) {
-                    toast.error('Agent not found.', {
-                        duration: 2500
-                    });
-
+                    toast.error('Agent not found.');
                     return;
                 }
 
                 toast.error('Failed to delete agent.', {
-                    description: 'Something went wrong. Please try again.',
-                    duration: 2500
+                    description: <span className="text-gray-500">Something went wrong. Please try again.</span>
                 });
             } else {
                 toast.error('Unexpected error.', {
-                    description: 'Please try again later.',
-                    duration: 2500
+                    description: <span className="text-gray-500">Please try again later.</span>
                 })
             }
         }
@@ -112,9 +105,7 @@ export const ManageAgents = () => {
         try {
             const res = await api.post('/add-agents', { fullname, email, phone, password });
             if (res.status === 201) {
-                toast.success('Agent added successfully!', {
-                    duration: 2500,
-                });
+                toast.success('Agent added successfully!');
 
                 reset();
                 setShowForm(false);
@@ -126,20 +117,16 @@ export const ManageAgents = () => {
                 const status = error.response?.status;
 
                 if (status === 409) {
-                    toast.error(error.response?.data.message, {
-                        duration: 2500
-                    })
+                    toast.error(error.response?.data.message)
                     return;
                 }
 
                 toast.error('Failed to add agent.', {
-                    description: 'Something went wrong. Please try again.',
-                    duration: 2500
+                    description: <span className="text-gray-500">Something went wrong. Please try again.</span>
                 });
             } else {
                 toast.error('Unexpected error.', {
-                    description: 'Please try again later.',
-                    duration: 2500
+                    description: <span className="text-gray-500">Please try again later.</span>
                 });
             }
         }
