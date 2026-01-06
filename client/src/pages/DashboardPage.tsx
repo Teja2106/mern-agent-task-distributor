@@ -1,3 +1,4 @@
+import { Distribution } from "@/components/custom/Distribution"
 import { ManageAgents } from "@/components/custom/ManageAgents"
 import { Navbar } from "@/components/custom/Navbar"
 import { Separator } from "@/components/ui/separator"
@@ -65,12 +66,7 @@ export const Dashboard = () => {
                         </TabsContent>
 
                         <TabsContent value="distribution">
-                            <div>
-                                <div className="mt-6">
-                                    <p className="font-bold text-2xl">Upload & Distribute Lists</p>
-                                    <p className="text-gray-400">Upload CSV files and distribute them equally among 5 agents</p>
-                                </div>
-                            </div>
+                            <Distribution />
                         </TabsContent>
                     </Tabs>
                 </div>
