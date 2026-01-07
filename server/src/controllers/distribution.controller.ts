@@ -67,16 +67,35 @@ const validateRows = (rows: any[]) => {
 }
 
 const distributeTasks = (rows: any[], agents: any[]) => {
+    const TOTAL_SLOTS = 5;
+
+    const buckets: any[][] = Array.from({ length: TOTAL_SLOTS }, () => []);
+
+    rows.forEach((row, index) => {
+        const bucketIndex = index % TOTAL_SLOTS;
+
+        const bucket = buckets[bucketIndex];
+        if (!bucket) return;
+
+        bucket.push(row);
+    });
+
     const result: Record<string, any[]> = {};
 
-    agents.forEach((agent) => {
+    agents.forEach(agent => {
         result[agent._id.toString()] = [];
     });
 
-    rows.forEach((row, index) => {
+    buckets.forEach((bucket, index) => {
         const agentIndex = index % agents.length;
-        const agentId = agents[agentIndex]._id.toString();
-        result[agentId]?.push(row);
+        const agentId = agents[agentIndex]?._id.toString();
+
+        if (!agentId) return;
+
+        const agentTasks = result[agentId];
+        if (!agentTasks) return;
+
+        agentTasks.push(...bucket);
     });
 
     return result;
@@ -106,8 +125,8 @@ export const Distribution = async (req: Request, res: Response) => {
 
         const agents = await User.find({ role: 'agent' }).limit(5);
 
-        if (agents.length !== 5) {
-            throw new Error('Insufficient number of agents available for task distribution.');
+        if (agents.length === 0) {
+            throw new Error('No agents available for task distribution.');
         }
 
         const distributed = distributeTasks(rows, agents);

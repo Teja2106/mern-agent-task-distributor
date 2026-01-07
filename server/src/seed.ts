@@ -5,7 +5,7 @@ const seedUser = async () => {
     try {
         await connectDB();
 
-        const existingUser = await User.findOne({ email: 'admin@example.com' });
+        const existingUser = await User.findOne({ email: process.env.ADMIN_EMAIL });
         if (existingUser) {
             console.log('Admin user already exists.');
             process.exit(0);
@@ -13,10 +13,10 @@ const seedUser = async () => {
 
         await User.create({
             name: 'Admin',
-            email: 'admin@mail.com',
+            email: process.env.ADMIN_EMAIL,
             role: 'admin',
             phone: '1234567890',
-            password: 'shoyouwu'
+            password: process.env.ADMIN_PASSWORD
         });
 
         console.log('Admin created successfully.');

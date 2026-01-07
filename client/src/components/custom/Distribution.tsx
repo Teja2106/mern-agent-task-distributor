@@ -155,7 +155,7 @@ export const Distribution = () => {
             {distribution.length > 0 && (
                 <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {distribution.map((agent) => (
-                        <Card key={agent.agentId}>
+                        <Card key={agent.agentId} className="h-105 flex flex-col mb-4">
                             <CardHeader>
                                 <CardTitle>{agent.agentName}</CardTitle>
                                 <CardDescription>
@@ -163,7 +163,7 @@ export const Distribution = () => {
                                 </CardDescription>
                             </CardHeader>
 
-                            <CardContent className="space-y-3">
+                            <CardContent className="space-y-3 flex-1 overflow-y-auto">
                                 {agent.tasks.map((task, index) => (
                                     <div
                                         key={index}
