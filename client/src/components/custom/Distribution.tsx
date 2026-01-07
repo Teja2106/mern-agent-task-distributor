@@ -10,9 +10,22 @@ import { Spinner } from "../ui/spinner"
 import { toast } from "sonner"
 import { api } from "@/lib/api"
 import axios from "axios"
+import { useState } from "react"
 
 const MAX_UPLOAD_SIZE = 10 * 1024; // 10 KB
 const ACCEPTED_FILE_TYPES = ['text/csv'];
+
+type Task = {
+    FirstName: string;
+    Phone: string;
+    Notes: string;
+}
+
+type AgentDistribution = {
+    agentId: string;
+    agentName: string;
+    tasks: Task[];
+}
 
 const fileUploadSchema = z.object({
     file: z.custom<FileList>()
@@ -24,6 +37,7 @@ const fileUploadSchema = z.object({
 type FileUploadForm = z.infer<typeof fileUploadSchema>;
 
 export const Distribution = () => {
+    const [distribution, setDistribution] = useState<AgentDistribution[]>([]);
     const { register, handleSubmit, control, reset, formState: { errors, isSubmitting } } = useForm<FileUploadForm>({ resolver: zodResolver(fileUploadSchema) });
 
     const uploadedFile = useWatch({
@@ -52,6 +66,7 @@ export const Distribution = () => {
                         onClick: () => toast.dismiss()
                     }
                 });
+                setDistribution(res.data.data);
                 reset();
             }
         } catch (error) {
@@ -61,7 +76,7 @@ export const Distribution = () => {
                 if (status === 400) {
                     toast.error('Invalid file format.', {
                         description: <span className="text-gray-500">Please ensure the file has the correct format and required columns.</span>,
-                        
+
                         action: {
                             label: 'Close',
                             onClick: () => toast.dismiss()
@@ -136,6 +151,43 @@ export const Distribution = () => {
                     </CardContent>
                 </Card>
             </div>
+
+            {distribution.length > 0 && (
+                <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {distribution.map((agent) => (
+                        <Card key={agent.agentId}>
+                            <CardHeader>
+                                <CardTitle>{agent.agentName}</CardTitle>
+                                <CardDescription>
+                                    Tasks assigned: {agent.tasks.length}
+                                </CardDescription>
+                            </CardHeader>
+
+                            <CardContent className="space-y-3">
+                                {agent.tasks.map((task, index) => (
+                                    <div
+                                        key={index}
+                                        className="border rounded-md p-3 text-sm bg-neutral-secondary-medium"
+                                    >
+                                        <p>
+                                            <span className="font-medium">Name:</span>{" "}
+                                            {task.FirstName}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium">Phone:</span>{" "}
+                                            {task.Phone}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium">Notes:</span>{" "}
+                                            {task.Notes}
+                                        </p>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </>
     )
 }

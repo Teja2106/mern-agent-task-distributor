@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
 import xlsx from 'xlsx';
+import { User } from "../models/user.model";
+import { Task } from "../models/task.mmodel";
 
 const REQUEIRED_COLUMNS = ['FirstName', 'Phone', 'Notes'];
 
@@ -64,6 +66,22 @@ const validateRows = (rows: any[]) => {
     });
 }
 
+const distributeTasks = (rows: any[], agents: any[]) => {
+    const result: Record<string, any[]> = {};
+
+    agents.forEach((agent) => {
+        result[agent._id.toString()] = [];
+    });
+
+    rows.forEach((row, index) => {
+        const agentIndex = index % agents.length;
+        const agentId = agents[agentIndex]._id.toString();
+        result[agentId]?.push(row);
+    });
+
+    return result;
+}
+
 export const Distribution = async (req: Request, res: Response) => {
     if (!req.file) {
         return res.status(400).json({ message: 'File not uploaded' });
@@ -86,7 +104,38 @@ export const Distribution = async (req: Request, res: Response) => {
         validateColumns(rows);
         validateRows(rows);
 
-        return res.status(200).json({ message: 'File processed successfully' });
+        const agents = await User.find({ role: 'agent' }).limit(5);
+
+        if (agents.length !== 5) {
+            throw new Error('Insufficient number of agents available for task distribution.');
+        }
+
+        const distributed = distributeTasks(rows, agents);
+
+        const tasksToInsert = [];
+
+        for (const agent of agents) {
+            const agentTask = distributed[agent._id.toString()] ?? [];
+
+            for (const task of agentTask) {
+                tasksToInsert.push({
+                    firstName: task.FirstName,
+                    phone: task.Phone,
+                    notes: task.Notes,
+                    agent: agent._id
+                });
+            }
+        }
+
+        await Task.insertMany(tasksToInsert);
+
+        const response = agents.map((agent) => ({
+            agentId: agent._id,
+            agentName: agent.name,
+            tasks: distributed[agent._id.toString()]
+        }));
+
+        return res.status(200).json({ message: 'File processed successfully.', data: response });
     } catch (error) {
         try {
             await fs.promises.unlink(filePath);
